@@ -465,15 +465,17 @@ function syncIngredientCardsUI() {
 
 /**
  * Ensure persistent bottom bun, top bun, and toothpick flag elements exist in #burger-stack
+ * Pre-renders all 4 bread variants in the DOM so switching bread is 0ms with zero network wait.
  */
 function ensureBaseStackElements() {
-  const bread = BREAD_MAP[state.selectedBread];
-
   if (!layerDomMap.has('bun_bottom')) {
     const botEl = document.createElement('div');
     botEl.className = 'burger-layer layer-bun-bottom';
     botEl.style.setProperty('--layer-width', '196px');
-    botEl.innerHTML = `<img src="${bread.bottomImg}" alt="Base de pan" fetchpriority="high" draggable="false">`;
+    botEl.innerHTML = BREADS.map(
+      (b) =>
+        `<img class="bun-variant${b.id === state.selectedBread ? ' is-active-bun' : ''}" data-bread-id="${b.id}" src="${b.bottomImg}" alt="Base ${b.name[state.lang]}" ${b.id === 'brioche' ? 'fetchpriority="high"' : ''} draggable="false">`
+    ).join('');
     dom.burgerStack.appendChild(botEl);
     layerDomMap.set('bun_bottom', botEl);
   }
@@ -482,7 +484,10 @@ function ensureBaseStackElements() {
     const topEl = document.createElement('div');
     topEl.className = 'burger-layer layer-bun-top';
     topEl.style.setProperty('--layer-width', '202px');
-    topEl.innerHTML = `<img src="${bread.topImg}" alt="Tapa de pan" fetchpriority="high" draggable="false">`;
+    topEl.innerHTML = BREADS.map(
+      (b) =>
+        `<img class="bun-variant${b.id === state.selectedBread ? ' is-active-bun' : ''}" data-bread-id="${b.id}" src="${b.topImg}" alt="Tapa ${b.name[state.lang]}" ${b.id === 'brioche' ? 'fetchpriority="high"' : ''} draggable="false">`
+    ).join('');
     dom.burgerStack.appendChild(topEl);
     layerDomMap.set('bun_top', topEl);
   }
@@ -710,19 +715,45 @@ function selectBread(breadId) {
   const botEl = layerDomMap.get('bun_bottom');
   const topEl = layerDomMap.get('bun_top');
 
-  botEl.querySelector('img').src = bread.bottomImg;
-  topEl.querySelector('img').src = bread.topImg;
-
-  // Subtle spring pop when switching buns
-  topEl.style.setProperty('--lift-y', '-18px');
-  botEl.style.setProperty('--lift-y', '5px');
-  setTimeout(() => {
-    topEl.style.setProperty('--lift-y', '0px');
-    botEl.style.setProperty('--lift-y', '0px');
-  }, 160);
+  botEl.querySelectorAll('.bun-variant').forEach((img) => {
+    img.classList.toggle('is-active-bun', img.dataset.breadId === breadId);
+  });
+  topEl.querySelectorAll('.bun-variant').forEach((img) => {
+    img.classList.toggle('is-active-bun', img.dataset.breadId === breadId);
+  });
 
   layoutBurgerStack();
-  setStageCaption(`${bread.name[state.lang]}`, true);
+
+  // Expressive spring pop when switching buns (after layoutBurgerStack so it isn't overwritten)
+  topEl.style.setProperty('--lift-y', '-38px');
+  topEl.style.setProperty('--layer-scale-x', '1.05');
+  topEl.style.setProperty('--layer-scale-y', '0.94');
+  botEl.style.setProperty('--lift-y', '12px');
+  botEl.style.setProperty('--layer-scale-x', '1.05');
+  botEl.style.setProperty('--layer-scale-y', '0.94');
+
+  state.instances.forEach((inst) => {
+    const el = layerDomMap.get(`ing_${inst.uid}`);
+    if (el) el.style.setProperty('--lift-y', '-10px');
+  });
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      topEl.style.setProperty('--lift-y', '0px');
+      topEl.style.setProperty('--layer-scale-x', '1');
+      topEl.style.setProperty('--layer-scale-y', '1');
+      botEl.style.setProperty('--lift-y', '0px');
+      botEl.style.setProperty('--layer-scale-x', '1');
+      botEl.style.setProperty('--layer-scale-y', '1');
+      state.instances.forEach((inst) => {
+        const el = layerDomMap.get(`ing_${inst.uid}`);
+        if (el) el.style.setProperty('--lift-y', '0px');
+      });
+    }, 60);
+  });
+
+  const prefix = state.lang === 'es' ? 'Pan ' : 'Pão ';
+  setStageCaption(`${prefix}${bread.name[state.lang]}`, true);
 }
 
 /**

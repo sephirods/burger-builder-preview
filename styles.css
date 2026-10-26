@@ -304,6 +304,14 @@ body {
   filter: drop-shadow(0 6px 8px rgba(20, 16, 12, 0.22));
 }
 
+.burger-layer img.bun-variant {
+  display: none;
+}
+
+.burger-layer img.bun-variant.is-active-bun {
+  display: block;
+}
+
 /* Grill Compression State ("Na chapa" / "En la plancha") */
 .burger-stack.is-grilling .burger-layer {
   transition:
