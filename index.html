@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Armá tu Hamburguesa — White Label Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="builder-shell" id="app-shell">
+    <!-- Top Header & Language / Reset Controls -->
+    <header class="builder-header">
+      <div class="header-row">
+        <h1 class="builder-title" id="ui-title">Armá tu hamburguesa</h1>
+        <div class="header-actions">
+          <button type="button" class="lang-toggle" id="lang-toggle" title="Cambiar idioma ES / PT" aria-label="Cambiar idioma">
+            <span id="lang-label">ES</span>
+          </button>
+          <button type="button" class="reset-btn" id="reset-btn" title="Reiniciar hamburguesa" aria-label="Reiniciar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bread Selector (4 options: Brioche, Australiano, Batata/Papa, Parmesão/Parmesano) -->
+      <nav class="bread-selector" id="bread-selector" aria-label="Selección de pan">
+        <!-- Populated dynamically by app.js -->
+      </nav>
+    </header>
+
+    <!-- Interactive 2D Layered Burger Stage -->
+    <section class="burger-stage-section" aria-live="polite">
+      <div class="burger-viewport" id="burger-viewport">
+        <!-- Ambient subtle radial studio glow behind the burger -->
+        <div class="stage-glow"></div>
+
+        <!-- Grill Steam / Smoke Canvas (Active during 'Na chapa' / 'En la plancha') -->
+        <canvas class="steam-canvas" id="steam-canvas" width="420" height="320"></canvas>
+
+        <!-- Camera container that auto-scales as the burger grows taller -->
+        <div class="burger-camera" id="burger-camera">
+          <!-- Ground contact shadow beneath the bottom bun -->
+          <div class="burger-floor-shadow" id="burger-floor-shadow"></div>
+
+          <!-- Dynamic Stack of Burger Layers (Bottom bun + sorted ingredients + Top bun + Toothpick flag) -->
+          <div class="burger-stack" id="burger-stack">
+            <!-- Rendered by app.js -->
+          </div>
+
+          <!-- Active Kitchen Utensil Overlay (Spatula, Tongs, Squeeze Bottle) -->
+          <div class="utensil-layer" id="utensil-layer" aria-hidden="true"></div>
+        </div>
+
+        <!-- Floating Order Ready Summary Card (Shown when 'Saiu da chapa' completes, matching 00:30 in video) -->
+        <div class="order-ready-toast" id="order-ready-toast" hidden>
+          <div class="toast-summary" id="toast-summary-text"></div>
+          <div class="toast-status-row">
+            <span class="toast-check">✓</span>
+            <span id="toast-paid-label">Pago confirmado · Delivery</span>
+          </div>
+          <div class="toast-queue-pill" id="toast-queue-pill">
+            <span id="toast-queue-text">Ya estás en la fila →</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage Status Caption ("Escolha o pão e toque para empilhar", "Cheddar x2", "Chapa a 250° · 3 minutos", etc.) -->
+      <div class="stage-caption-row">
+        <p class="stage-caption" id="stage-caption">Elegí el pan y tocá para apilar</p>
+      </div>
+    </section>
+
+    <!-- 18 Ingredients Grid (5 columns x 4 rows, exact layout from video) -->
+    <section class="ingredients-section" id="ingredients-section" aria-label="Ingredientes">
+      <div class="ingredients-grid" id="ingredients-grid">
+        <!-- Populated by app.js -->
+      </div>
+    </section>
+
+    <!-- Bottom Order / Grill Action Bar -->
+    <footer class="builder-footer">
+      <button type="button" class="order-cta-btn" id="order-cta-btn">
+        <div class="cta-progress-fill" id="cta-progress-fill"></div>
+        <span class="cta-label" id="cta-label">Agregar al pedido</span>
+        <span class="cta-price" id="cta-price">$ 24,00</span>
+      </button>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
